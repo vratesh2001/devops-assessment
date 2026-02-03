@@ -1,60 +1,28 @@
-# DevOps Assessment Application
+![Build Status](https://github.com/vratesh2001/devops-assessment/actions/workflows/main.yml/badge.svg)
 
-A simple "Hello World" full-stack application built with **Django** (Backend) and **React with Vite** (Frontend).
+# DevOps Assessment - Full Stack Web Application
 
-## Project Overview
+This project consists of a Django Backend and a React (Vite) Frontend, fully containerized and automated using Docker and GitHub Actions.
 
-- **Backend**: Django 6.0 (REST API)
-- **Frontend**: React (Vite, TypeScript, Lucide Icons)
-- **Styling**: Premium custom CSS with dark/light mode support.
-- **Communication**: REST API using Axios with CORS enabled.
+## Project Structure
+- **/frontend**: React application served via Nginx.
+- **/backend**: Django REST API running on Python 3.12.
+- **/.github/workflows**: CI/CD pipeline for automated Docker builds.
 
-## Getting Started
+## How to Run Locally
+1. Clone the repository.
+2. Run `docker-compose up --build`.
+3. Frontend: `http://localhost`
+4. Backend: `http://localhost:8000`
 
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- npm 9+
+## CI/CD Pipeline
+- **GitHub Actions**: Automatically builds and pushes Docker images to Docker Hub on every push to the `main` branch.
 
-### Backend Setup (Django)
+## Troubleshooting & Bug Fixes
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install django django-cors-headers psycopg2-binary
-   ```
-4. Run the development server:
-   ```bash
-   python manage.py runserver
-   ```
-   The backend will be available at `http://localhost:8000/api/hello/`.
+During the containerization process, the following issues from the base repository were identified and resolved:
 
-### Frontend Setup (React/Vite)
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   The frontend will be available at `http://localhost:5173/`.
-
-## Architecture Decisions
-- **Vite**: Used for its superior development experience and fast build times.
-- **Django**: Chosen for its robustness and ease of setting up a structured API.
-- **CORS**: Configured in Django to allow the React frontend to fetch data during local development.
-- **Responsive Design**: Custom CSS ensures the application looks premium on all screen sizes and supports dark mode.
+1. **Path Mismatch Fix**: The original configuration looked for `manage.py` in `/app/core/`, but the file was located in the root `backend/` directory. I updated the `WORKDIR` and `CMD` in the Dockerfile to correctly map the file structure.
+2. **Non-Root Security**: Updated the Backend Dockerfile to run as a non-privileged `django` user instead of `root` to follow security best practices.
+3. **Frontend Nginx Routing**: Configured Nginx to properly serve the Vite build and proxy API requests to the Django container, resolving "Connection Refused" errors.
+4. **CI/CD Integration**: Resolved 403 Permission errors by migrating the remote origin to a personal repository and configuring GitHub Actions Secrets for secure Docker Hub deployment.
